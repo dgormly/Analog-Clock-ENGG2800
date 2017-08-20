@@ -81,6 +81,9 @@ public class MainWindowController implements Initializable {
 
     private int hours;
     private int minutes;
+    private Color amColor = Color.DODGERBLUE;
+    private Color pmColor = Color.DARKBLUE;
+    private Color hourColor;
 
     private Map<Integer, Circle> hourMap = new HashMap<>();
     private Map<Integer, Circle> minuteMap = new HashMap<>();
@@ -100,9 +103,6 @@ public class MainWindowController implements Initializable {
         setTimeButton.setOnAction(e -> this.setTime());
         setupMaps();
         setupTime();
-
-
-
     }
 
 
@@ -118,7 +118,7 @@ public class MainWindowController implements Initializable {
         hourMap.put(9, hour9);
         hourMap.put(10, hour10);
         hourMap.put(11, hour11);
-        hourMap.put(12, hour12);
+        hourMap.put(0, hour12);
 
         minuteMap.put(1, minute1);
         minuteMap.put(2, minute2);
@@ -131,24 +131,35 @@ public class MainWindowController implements Initializable {
         minuteMap.put(9, minute9);
         minuteMap.put(10, minute10);
         minuteMap.put(11, minute11);
-        minuteMap.put(12, minute12);
+        minuteMap.put(0, minute12);
     }
 
     private void setupTime() {
         Calendar cal = Calendar.getInstance();
-        cal.setTime(new Date());
-        this.hours = cal.get(Calendar.HOUR_OF_DAY);
-        this.minutes = cal.get(Calendar.MINUTE);
+        try {
+            cal.setTime(new Date());
+        } catch (Exception e) {
 
+        }
+        this.hours = cal.get(Calendar.HOUR_OF_DAY);
+        if (this.hours > 12) {
+            this.hourColor = this.pmColor;
+        } else {
+            this.hourColor = this.amColor;
+        }
+        this.hours %= 12;
+        this.minutes = cal.get(Calendar.MINUTE) % 60;
+        updateClockFace();
     }
 
 
     private void updateClockFace() {
-        for (int i = 1; i <= 12; i++) {
-            i.getValue().setFill(Color.BLUE);
+        for (int i = 0; i < 12; i++) {
+            hourMap.get(i).setFill(this.hourColor);
+            minuteMap.get(i).setFill(Color.GREEN);
         }
-        hourMap.get(this.hours).setFill(Color.RED);
-        minuteMap.get(this.minutes/5).setFill(Color.GREEN);
+        hourMap.get(this.hours).setFill(Color.BLACK);
+        minuteMap.get(this.minutes/5).setFill(Color.BLACK);
     }
 
 
@@ -157,14 +168,19 @@ public class MainWindowController implements Initializable {
         String hourInput = this.hourTextfield.getText();
         String minuteInput = this.minuteTextfield.getText();
 
-        this.hours = Integer.parseInt(hourInput);
-        this.minutes = Integer.parseInt(minuteInput);
-        updateClockFace();
-    }
-
-    @FXML
-    private void helloWorld() {
-
+        try {
+            this.hours = Integer.parseInt(hourInput);
+            if (this.hours >= 12 || pmRadio.isSelected() == true) {
+                this.hourColor = this.pmColor;
+            } else {
+                this.hourColor = this.amColor;
+            }
+            this.hours %= 12;
+            this.minutes = Integer.parseInt(minuteInput) % 60;
+            updateClockFace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 }
