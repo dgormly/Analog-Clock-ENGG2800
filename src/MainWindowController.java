@@ -19,6 +19,7 @@ import java.util.*;
  */
 public class MainWindowController implements Initializable {
 
+
     /* FXML Nodes */
     @FXML
     private RadioButton amRadio;
@@ -78,15 +79,26 @@ public class MainWindowController implements Initializable {
     private Circle minute11;
     @FXML
     private Circle minute12;
+    @FXML
+    private Circle min1;
+    @FXML
+    private Circle min2;
+    @FXML
+    private Circle min3;
+    @FXML
+    private Circle min4;
 
+    /* Other Variables */
     private int hours;
     private int minutes;
     private Color amColor = Color.DODGERBLUE;
     private Color pmColor = Color.DARKBLUE;
     private Color hourColor;
 
+    /* Clock maps */
     private Map<Integer, Circle> hourMap = new HashMap<>();
     private Map<Integer, Circle> minuteMap = new HashMap<>();
+    private Map<Integer, Circle> minMap = new HashMap<>();
 
     /**
      * A function which sets up the button and input field handlers.
@@ -106,6 +118,9 @@ public class MainWindowController implements Initializable {
     }
 
 
+    /**
+     * Map Circles to numbers on a clock face.
+     */
     private void setupMaps() {
         hourMap.put(1, hour1);
         hourMap.put(2, hour2);
@@ -132,8 +147,18 @@ public class MainWindowController implements Initializable {
         minuteMap.put(10, minute10);
         minuteMap.put(11, minute11);
         minuteMap.put(0, minute12);
+
+        minMap.put(1, min1);
+        minMap.put(2, min2);
+        minMap.put(3, min3);
+        minMap.put(4, min4);
+
     }
 
+
+    /**
+     * Setup initial clockface with numbers
+     */
     private void setupTime() {
         Calendar cal = Calendar.getInstance();
         try {
@@ -153,16 +178,28 @@ public class MainWindowController implements Initializable {
     }
 
 
+    /**
+     *
+     */
     private void updateClockFace() {
         for (int i = 0; i < 12; i++) {
             hourMap.get(i).setFill(this.hourColor);
             minuteMap.get(i).setFill(Color.GREEN);
         }
+        for (int i = 1; i < 5; i++) {
+            minMap.get(i).setFill(Color.CRIMSON);
+        }
         hourMap.get(this.hours).setFill(Color.BLACK);
-        minuteMap.get(this.minutes/5).setFill(Color.BLACK);
+        minuteMap.get(this.minutes / 5).setFill(Color.BLACK);
+        if (this.minutes % 5 > 0) {
+            minMap.get(this.minutes % 5).setFill(Color.BLACK);
+        }
     }
 
 
+    /**
+     *
+     */
     @FXML
     private void setTime() {
         String hourInput = this.hourTextfield.getText();
